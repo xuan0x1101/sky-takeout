@@ -1,6 +1,10 @@
 **/target/
 .idea
+nginx-1.20.2/
+**/test/
 *.iml
 *.class
+*.log
+*.yaml
 *Test.java
-**/test/
+project_rule.md
