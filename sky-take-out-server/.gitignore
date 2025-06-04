@@ -5,7 +5,5 @@ nginx-1.20.2/
 *.iml
 *.class
 *.log
-*.yaml
-*.yml
 *Test.java
 project_rule.md
