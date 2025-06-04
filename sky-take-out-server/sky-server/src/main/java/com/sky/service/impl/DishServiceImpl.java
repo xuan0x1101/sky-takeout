@@ -3,12 +3,16 @@ package com.sky.service.impl;
 
 import com.github.pagehelper.Page;
 import com.github.pagehelper.PageHelper;
+import com.sky.constant.MessageConstant;
+import com.sky.constant.StatusConstant;
 import com.sky.dto.DishDTO;
 import com.sky.dto.DishPageQueryDTO;
 import com.sky.entity.Dish;
 import com.sky.entity.DishFlavor;
+import com.sky.exception.DeletionNotAllowedException;
 import com.sky.mapper.DishFlavorMapper;
 import com.sky.mapper.DishMapper;
+import com.sky.mapper.SetmealDishMapper;
 import com.sky.result.PageResult;
 import com.sky.service.DishService;
 import com.sky.vo.DishVO;
@@ -19,6 +23,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Objects;
 
 @Service
 @Slf4j
@@ -28,6 +33,8 @@ public class DishServiceImpl implements DishService {
     private DishMapper dishMapper;
     @Autowired
     private DishFlavorMapper dishFlavorMapper;
+    @Autowired
+    private SetmealDishMapper setmealDishMapper;
 
     /**
      * 新增菜品和对应的口味
@@ -58,7 +65,6 @@ public class DishServiceImpl implements DishService {
 
     /**
      * 菜品分页查询
-     *
      * @param dishPageQueryDTO
      * @return
      */
@@ -66,6 +72,56 @@ public class DishServiceImpl implements DishService {
         PageHelper.startPage(dishPageQueryDTO.getPage(), dishPageQueryDTO.getPageSize());
         Page<DishVO> page = dishMapper.pageQuery(dishPageQueryDTO);//后绪步骤实现
         return new PageResult(page.getTotal(), page.getResult());
+    }
+
+    /**
+     * 批量删除菜品
+     * @param ids
+     * @return void
+     */
+    @Override
+    @Transactional
+    public void deleteBatch(List<Long> ids) {
+
+        // 判断是否存在id
+        for (Long id : ids) {
+            Dish dish = dishMapper.getById(id);
+            if (Objects.equals(dish.getStatus(), StatusConstant.ENABLE)) {
+                // 如果存在，判断状态是否为起售状态，起售状态则不能删除
+                throw new DeletionNotAllowedException(MessageConstant.DISH_ON_SALE);
+            }
+        }
+
+        // 判断是否在套餐内
+        List<Long> setmealIds = setmealDishMapper.getSetmealIdsByDishIds(ids);
+        if(setmealIds != null && !setmealIds.isEmpty()) {
+            throw new DeletionNotAllowedException(MessageConstant.DISH_BE_RELATED_BY_SETMEAL);
+        }
+
+        // 删除菜品 口味
+        dishMapper.deleteDishByIds(ids);
+        dishFlavorMapper.deleteDishFlavorByIds(ids);
+    }
+
+    /**
+     * 根据id查菜
+     * @param id
+     * @return
+     */
+    @Override
+    public DishVO getByIdWithFlavor(Long id) {
+        //查菜
+        Dish dish = dishMapper.getById(id);
+
+        //查口味
+        List<DishFlavor> dishFlavors = dishFlavorMapper.getByDishId(id);
+
+        //封装VO
+        DishVO dishVO = new DishVO();
+        BeanUtils.copyProperties(dish, dishVO);
+        dishVO.setFlavors(dishFlavors);
+
+        return dishVO;
     }
 
 }
