@@ -50,4 +50,12 @@ public interface DishMapper {
      * @param ids
      */
     void deleteDishByIds(List<Long> ids);
+
+    /**
+     * 修改菜品
+     * @param dish
+     * @return Result
+     */
+    @com.sky.anotation.AutoFill(OperationType.UPDATE)
+    void update(Dish dish);
 }
