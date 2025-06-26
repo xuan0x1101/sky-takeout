@@ -53,5 +53,6 @@ public interface SetmealMapper {
      * 更新setmeal
      * @param setmeal
      */
+    @com.sky.anotation.AutoFill(OperationType.UPDATE)
     void update(Setmeal setmeal);
 }

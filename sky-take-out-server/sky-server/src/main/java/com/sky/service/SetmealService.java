@@ -43,4 +43,11 @@ public interface SetmealService {
      * @return
      */
     void update(SetmealDTO setmealDTO);
+
+    /**
+     * 套餐起售停售
+     * @param id
+     * @param status
+     */
+    void startOrStop(Long id, Integer status);
 }

@@ -25,6 +25,7 @@ public interface SetmealDishMapper {
      * 批量插入菜品套餐关系
      * @param setmealDishes
      */
+    @com.sky.anotation.AutoFill(OperationType.INSERT)
     void insertBatch(List<SetmealDish> setmealDishes);
 
     /**
