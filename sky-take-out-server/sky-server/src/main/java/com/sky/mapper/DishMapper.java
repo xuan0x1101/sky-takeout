@@ -58,4 +58,11 @@ public interface DishMapper {
      */
     @com.sky.anotation.AutoFill(OperationType.UPDATE)
     void update(Dish dish);
+
+    /**
+     * 根据菜品分类查菜
+     * @param dish
+     * @return
+     */
+    List<Dish> getDishByCategory(Dish dish);
 }
