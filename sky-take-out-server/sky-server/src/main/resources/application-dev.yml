@@ -14,3 +14,6 @@ sky:
     access-key-id:
     access-key-secret:
     bucket-name: sky-take-out-xuan
+  wechat:
+    appid: wx2fe0085856c9a163
+    secret: 17d1ed9d0a903fb4639db52f0ba69a76

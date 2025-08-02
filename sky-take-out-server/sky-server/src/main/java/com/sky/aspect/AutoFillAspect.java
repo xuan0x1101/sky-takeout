@@ -51,6 +51,12 @@ public class AutoFillAspect {
         }
         Object arg = args[0];
 
+        // 添加类型检查，避免对集合类型进行方法调用
+        if (arg instanceof java.util.Collection || arg instanceof java.util.Map) {
+            // 如果是集合类型，可能需要遍历处理其中的每个元素
+            return;
+        }
+
         LocalDateTime localDateTime = LocalDateTime.now();
         Long currentId = BaseContext.getCurrentId();
 
