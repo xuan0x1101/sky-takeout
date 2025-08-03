@@ -18,4 +18,9 @@ public interface ShoppingCartService {
      * @return
      */
     List<ShoppingCart> showShoppingCart();
+
+    /**
+     * clear cart
+     */
+    void clearCartByUserId();
 }

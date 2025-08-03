@@ -80,4 +80,12 @@ public class ShoppingCartServiceImpl implements ShoppingCartService {
                 .build();
         return shoppingCartMapper.list(shoppingCart);
     }
+
+    /**
+     * clear cart
+     */
+    @Override
+    public void clearCartByUserId() {
+        shoppingCartMapper.clearCartByUserId(BaseContext.getCurrentId());
+    }
 }
