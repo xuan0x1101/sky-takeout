@@ -24,6 +24,7 @@ import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class OrderServiceImpl implements OrderService {
@@ -289,6 +290,30 @@ public class OrderServiceImpl implements OrderService {
         orders.setCancelReason("User Cancelled");
         orders.setCancelTime(LocalDateTime.now());
         orderMapper.update(orders);
+    }
+
+
+    /**
+     * 再来一单
+     * @param id
+     * @return
+     */
+    @Override
+    public void repetition(Long id) {
+
+        // get order detail
+        List<OrderDetail> orderDetailList = orderDetailMapper.getByOrderId(id);
+
+        // make shopping cart
+        List<ShoppingCart> shoppingCartList = orderDetailList.stream().map( x -> {
+            ShoppingCart shoppingCart = new ShoppingCart();
+            BeanUtils.copyProperties(x, shoppingCart, "id");
+            shoppingCart.setUserId(BaseContext.getCurrentId());
+            shoppingCart.setCreateTime(LocalDateTime.now());
+            return shoppingCart;
+        }).collect(Collectors.toList());
+
+        shoppingCartMapper.insertBatch(shoppingCartList);
     }
 
 }
