@@ -52,12 +52,7 @@ public class OrderController {
     @ApiOperation("订单支付")
     public Result<OrderPaymentVO> payment(@RequestBody OrdersPaymentDTO ordersPaymentDTO) throws Exception {
         log.info("订单支付：{}", ordersPaymentDTO);
-//        OrderPaymentVO orderPaymentVO = orderService.payment(ordersPaymentDTO);
-        OrderPaymentVO orderPaymentVO = new OrderPaymentVO();
-        orderPaymentVO.setNonceStr("testNonceStr");
-        orderPaymentVO.setPaySign("testPaySign");
-        orderPaymentVO.setSignType("RSA");
-        orderPaymentVO.setTimeStamp("1234567890");
+        OrderPaymentVO orderPaymentVO = orderService.payment(ordersPaymentDTO);
         log.info("生成预支付交易单：{}", orderPaymentVO);
         return Result.success(orderPaymentVO);
     }
@@ -91,4 +86,15 @@ public class OrderController {
     }
 
 
+    /**
+     * 取消订单
+     * @param id
+     * @return
+     */
+    @PutMapping("/cancel/{id}")
+    @ApiOperation("取消订单")
+    public Result cancel(@PathVariable("id") Long id) {
+        orderService.userCancelById(id);
+        return Result.success();
+    }
 }

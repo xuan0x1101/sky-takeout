@@ -145,15 +145,17 @@ public class OrderServiceImpl implements OrderService {
         OrderPaymentVO vo = jsonObject.toJavaObject(OrderPaymentVO.class);
         vo.setPackageStr(jsonObject.getString("package"));
 
-        Integer OrderPaidStatus = Orders.PAID; // 支付状态，已支付
+        // update order status
+        Orders ordersDB = orderMapper.getByNumber(ordersPaymentDTO.getOrderNumber());
+        // 根据订单id更新订单的状态、支付方式、支付状态、结账时间
+        Orders orders = Orders.builder()
+                .id(ordersDB.getId())
+                .status(Orders.TO_BE_CONFIRMED)
+                .payStatus(Orders.PAID)
+                .checkoutTime(LocalDateTime.now())
+                .build();
+        orderMapper.update(orders);
 
-        Integer OrderStatus = Orders.TO_BE_CONFIRMED; // 订单状态，待接单
-
-        // 发现没有将支付时间 check_out属性赋值，所以在这里更新
-
-        LocalDateTime check_out_time = LocalDateTime.now();
-
-        orderMapper.updateStatus(OrderStatus, OrderPaidStatus, check_out_time, orderId);
         return vo;
     }
 
@@ -162,7 +164,12 @@ public class OrderServiceImpl implements OrderService {
      * 支付成功，修改订单状态
      * @param outTradeNo
      */
+    /**
+     *     NEVER CALLED
+     */
     public void paySuccess(String outTradeNo) {
+
+        System.out.println("paySuccess() CALLED");
 
         // 根据订单号查询订单
         Orders ordersDB = orderMapper.getByNumber(outTradeNo);
@@ -240,6 +247,48 @@ public class OrderServiceImpl implements OrderService {
         orderVO.setOrderDetailList(orderDetailList);
 
         return orderVO;
+    }
+
+
+    /**
+     * 取消订单
+     * @param id
+     * @return
+     */
+    @Override
+    public void userCancelById(Long id) {
+
+        // get order
+        Orders order = orderMapper.getById(id);
+
+        // if order exist
+        if(order == null) {
+            throw new OrderBusinessException(MessageConstant.ORDER_NOT_FOUND);
+        }
+
+        // check status
+        if(order.getStatus() > 2) {
+            throw new OrderBusinessException(MessageConstant.ORDER_STATUS_ERROR);
+        }
+
+        Orders orders = new Orders();
+        orders.setId(order.getId());
+
+        if(order.getStatus().equals(Orders.TO_BE_CONFIRMED)) {
+//            //调用微信支付退款接口
+//            weChatPayUtil.refund(
+//                    ordersDB.getNumber(), //商户订单号
+//                    ordersDB.getNumber(), //商户退款单号
+//                    new BigDecimal(0.01),//退款金额，单位 元
+//                    new BigDecimal(0.01));//原订单金额
+            orders.setPayStatus(Orders.REFUND);
+        }
+
+        // update status
+        orders.setStatus(Orders.CANCELLED);
+        orders.setCancelReason("User Cancelled");
+        orders.setCancelTime(LocalDateTime.now());
+        orderMapper.update(orders);
     }
 
 }

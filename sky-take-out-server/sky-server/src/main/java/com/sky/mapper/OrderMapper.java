@@ -31,17 +31,6 @@ public interface OrderMapper {
     void update(Orders orders);
 
     /**
-     * 用于替换微信支付更新数据库状态的问题
-     *
-     * @param orderStatus
-     * @param orderPaidStatus
-     */
-    @Update(
-            "update orders set status = #{orderStatus},pay_status = #{orderPaidStatus} ,checkout_time = #{check_out_time} where id = #{id}")
-    void updateStatus(
-            Integer orderStatus, Integer orderPaidStatus, LocalDateTime check_out_time, Long id);
-
-    /**
      * 分页条件查询 并按下单时间排序
      * @param ordersPageQueryDTO
      */
