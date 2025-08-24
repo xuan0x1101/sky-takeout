@@ -26,7 +26,7 @@ public class OrderTask {
     /**
      * 处理支付超时订单
      */
-    @Scheduled(cron = "0 * * * * ?")
+    @Scheduled(cron = "0 15 * * * ?")
     public void processTimeoutOrder(){
         log.info("处理支付超时订单：{}", LocalDateTime.now());
 
