@@ -72,7 +72,7 @@ public class OrderController {
      */
     @PutMapping("/confirm")
     @ApiOperation("接单")
-    public Result confirm(OrdersConfirmDTO ordersConfirmDTO) {
+    public Result confirm(@RequestBody OrdersConfirmDTO ordersConfirmDTO) {
         orderService.confirm(ordersConfirmDTO);
         return Result.success();
     }
