@@ -87,4 +87,11 @@ public interface OrderMapper {
      * @return
      */
     List<GoodsSalesDTO> top10(LocalDateTime begin, LocalDateTime end);
+
+    /**
+     * 根据动态条件统计订单数量
+     * @param map
+     * @return
+     */
+    Integer countByMap(Map map);
 }
